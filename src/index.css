@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", sans-serif;
+  /* These two names are used in many pages: text-brand, bg-accent ... */
+  --color-brand: #0f172a;
+  --color-accent: #2563eb;
+}
+
+@layer base {
+  body {
+    background-color: #f9fafb;
+    color: #0f172a;
+    font-family: "Inter", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
