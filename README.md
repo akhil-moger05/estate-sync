@@ -1,52 +1,96 @@
 # EstateSync
 
-Property paperwork made easy. Users apply online, Admin checks, Agents do the work.
+**Property paperwork made easy.** Users apply online, the Admin checks the request, and an approved Agent does the work. Everyone can see the live progress.
 
-**Stack:** React + Vite + Tailwind (frontend) and PocketBase (backend and database).
+> A BCA college project - Shree Guru Sudhindra College of Computer Applications, Bhatkal (Karnatak University).
 
-## Roles
-| Role  | What they do |
-|-------|--------------|
-| User  | Registers, applies for a service, uploads a document, tracks progress |
-| Admin | Approves agents, sends requests to the agent pool, reads support tickets |
-| Agent | Accepts jobs, updates progress, marks job completed |
+![Home page](docs/screenshots/home.png)
 
-Flow: `User applies -> Admin reviews -> Agent accepts -> Progress updates -> Completed`
-The user gets a notification at every step.
+---
+
+## Why EstateSync?
+
+Property work (Sale Deed, Khata transfer, plan approval, legal checks) needs many visits to government offices and often depends on middlemen. EstateSync lets a person apply from home, shows a clear fee, and tracks every step.
+
+**Fees shown to the user:** Rs. 499 platform fee + 3% agent commission.
+
+## Features
+
+| Role | What they can do |
+|------|------------------|
+| **User** | Register, browse 20 services, apply with a document (max 5 MB), track status, read notifications |
+| **Agent** | Register (needs Admin approval), see open jobs, accept a job, update progress, mark completed |
+| **Admin** | Approve agents, review requests, send requests to the Agent Pool, read support tickets, see all users |
+
+- 20 property services in 8 categories
+- Role-based dashboards and protected pages
+- Real file upload
+- Notifications at every step
+- Help and Support form
+- Safe database rules (each role sees only its own data)
+
+## How it works
+
+```
+User applies -> Admin reviews -> Agent accepts -> Progress updates -> Completed
+                         (user gets a notification at each step)
+```
+
+| Status | Meaning |
+|--------|---------|
+| `admin_review` | Waiting for the Admin |
+| `pending_agent` | Open to approved agents |
+| `in_progress` | An agent is working on it |
+| `completed` | Work finished |
+
+## Screenshots
+
+| | |
+|---|---|
+| ![Services](docs/screenshots/services.png) | ![Service details](docs/screenshots/service-details.png) |
+| ![User dashboard](docs/screenshots/user-dashboard.png) | ![Notifications](docs/screenshots/notifications.png) |
+| ![Agent dashboard](docs/screenshots/agent-dashboard.png) | ![Admin dashboard](docs/screenshots/admin-dashboard.png) |
+
+## Tech stack
+
+- **Front end:** React, Vite, Tailwind CSS, React Router, Lucide icons
+- **Back end:** PocketBase (database, login, file storage, real-time)
+- **Tools:** Node.js, Git, GitHub, VS Code
 
 ## Run on your computer
 
-You need Node.js (18 or newer) and the PocketBase file.
+**You need:** [Node.js 18+](https://nodejs.org) and [PocketBase](https://pocketbase.io/docs).
 
-**1. Install the frontend**
+**1. Get the code and install**
 ```
+git clone https://github.com/akhil-moger05/estate-sync.git
+cd estate-sync
 npm install
 ```
 
-**2. Download PocketBase**
-Go to https://pocketbase.io/docs and download it for your system.
-Unzip it and put the `pocketbase` file inside the `pocketbase` folder of this project.
+**2. Add PocketBase**
+Download PocketBase for your system and put `pocketbase.exe` (or `pocketbase`) inside the `pocketbase` folder.
 
 **3. Start PocketBase (keep this window open)**
 ```
 cd pocketbase
-./pocketbase serve          (Windows:  pocketbase.exe serve)
+.\pocketbase.exe superuser upsert you@example.com YourStrongPass123
+.\pocketbase.exe serve
 ```
-Make your own super admin (only once):
-```
-./pocketbase superuser upsert you@example.com YourStrongPass123
-```
+(Mac/Linux: `./pocketbase` instead of `.\pocketbase.exe`)
 
-**4. Create tables and demo accounts (only once)**
-Open a new terminal in the project folder.
+**4. Create the tables and demo accounts (first time only)**
+Open a second terminal in the project folder.
 
-Mac / Linux:
-```
-PB_ADMIN_EMAIL=you@example.com PB_ADMIN_PASSWORD=YourStrongPass123 npm run setup-db
-```
 Windows PowerShell:
 ```
-$env:PB_ADMIN_EMAIL="you@example.com"; $env:PB_ADMIN_PASSWORD="YourStrongPass123"; npm run setup-db
+$env:PB_ADMIN_EMAIL="you@example.com"
+$env:PB_ADMIN_PASSWORD="YourStrongPass123"
+npm run setup-db
+```
+Mac/Linux:
+```
+PB_ADMIN_EMAIL=you@example.com PB_ADMIN_PASSWORD=YourStrongPass123 npm run setup-db
 ```
 
 **5. Start the website**
@@ -56,49 +100,52 @@ npm run dev
 Open http://localhost:5173
 
 ## Demo accounts
-| Role  | Email | Password |
-|-------|-------|----------|
+
+| Role | Email | Password |
+|------|-------|----------|
 | Admin | admin@estatesync.com | Admin@12345 |
 | Agent | agent@estatesync.com | Agent@12345 |
-| User  | user@estatesync.com  | User@12345  |
+| User | user@estatesync.com | User@12345 |
 
-Change these passwords before showing the project to many people.
-Test OTP in Register is `1234` (demo only, no real SMS).
+These are for demo only. Change them before any real use.
+The OTP step in Register is a demo (test code `1234`).
 
-## Demo script for college (5 minutes)
-1. Login as **User**, open Services, apply for "Khata Transfer" with a file.
-2. Login as **Admin**, press "Send to Agent Pool".
-3. Login as **Agent**, accept the job, change progress to Completed.
-4. Login as **User** again, see the status and Notifications.
-5. Show Register as Agent, then approve it in the Admin panel.
+## Try the full flow (5 minutes)
 
-## Upload to GitHub
+1. Login as **User**, open a service, and apply with a file.
+2. Login as **Admin**, press **Send to Agent Pool**.
+3. Login as **Agent**, accept the job, and set progress to Completed.
+4. Login as **User** again and check the status and Notifications.
+
+## Project structure
+
 ```
-git init
-git add .
-git commit -m "EstateSync first version"
-git branch -M main
-git remote add origin https://github.com/YOUR-NAME/estate-sync.git
-git push -u origin main
+estate-sync/
+  pocketbase/setup.mjs     creates tables, rules, demo accounts
+  src/
+    pages/                 Home, Services, Login, Register, dashboards...
+    components/            Navbar, ProtectedRoute
+    lib/                   pb.js (database link), notify.js (notifications)
+    utils/                 servicesData.js (the 20 services)
 ```
-First create an empty repo called `estate-sync` on github.com.
-The `.gitignore` already hides `node_modules`, `.env`, and your database.
 
-## Host online
-1. **Backend:** PocketBase needs a server that stays on (it is one file plus a data folder).
-   Use a small VPS, Fly.io, Railway, or a PocketBase host. Check which free plan is available today.
-   Run `npm run setup-db` once with `PB_URL=https://your-pocketbase-link` set.
-2. **Frontend:** On vercel.com or netlify.com, import the GitHub repo.
-   Add this setting: `VITE_PB_URL = https://your-pocketbase-link`
-   Build command `npm run build`, output folder `dist`.
-3. If you only need it for college, running on your laptop (steps above) is the safest.
+## Database (PocketBase collections)
 
-## Folder map
-```
-src/
-  pages/        all screens (Home, Login, dashboards...)
-  components/   Navbar, ProtectedRoute
-  lib/          pb.js (database link), notify.js (notifications)
-  utils/        servicesData.js (the 20 services)
-pocketbase/setup.mjs   creates tables, rules, demo accounts
-```
+`users` - `requests` - `notifications` - `support_tickets`
+
+Access rules are set on the server, so even if someone edits the website code, wrong actions are blocked (for example, nobody can register as Admin).
+
+## Current limits
+
+- OTP is a demo, no real SMS.
+- No online payment yet (fees are only shown).
+- Not hosted online. PocketBase needs a server that stays on.
+
+## Future work
+
+Razorpay payment, real SMS/email OTP, live chat, agent ratings, admin reports, Kannada/Hindi support, mobile app.
+
+## Authors
+
+Akhil G Moger and Goutam G Naik - BCA, 2026-27
+Guide: Miss. Chandana Naik, Lecturer, Department of Computer Application
